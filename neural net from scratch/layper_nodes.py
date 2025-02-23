@@ -4,26 +4,9 @@ from nnfs.datasets import spiral_data
 nnfs.init()
 
 
-X = [
-    [1, 2, 3, 2.5],
-    [2.0, 5.0, -1.0, 2.0],
-    [-1.5, 2.7, 3.3, -0.8]
-]
-
-X, y = spiral_data(100, 3)
 
 
-print(X[0].shape)
-# inputs = [0, 2, -1, 3.3, 2.7, 1.1, 2.2, -100]
-# output = []
 
-# for i in inputs:
-#     if i > 0:
-#         output.append(i)
-#     elif i <= 0:
-#         output.append(0)
-
-# print(output)
 
 
 class Layers_Dense:
@@ -45,15 +28,29 @@ class Activation_ReLU:
     def forward(self, inputs):
         self.output = np.maximum(0, inputs)
 
+class Activation_Softmax:
+    def forward(self, inputs):
+        exp_values = np.exp(inputs - np.max(inputs, axis=1, keepdims=True))
+        probabilities = exp_values / np.sum(exp_values, axis=1, keepdims=True)
+        self.output = probabilities
 
-#defining a layer with 2 inputs
-layer1 = Layers_Dense(2, 5)
-#defining the relu acitvation 
-activatation_1 = Activation_ReLU()
 
-layer1.forward(X)
-activatation_1.forward(layer1.output)
+X, y = spiral_data(samples = 100, classes= 3)
 
-print(layer1.output)
-print(activatation_1.output)
+# defining the object for dense network class, acitvation relu class and acitvatation softmax class
+dense1 = Layers_Dense(2, 3)
+activation_1 = Activation_ReLU()
+
+dense2 = Layers_Dense(3, 3) 
+activation_2 = Activation_Softmax()
+
+
+dense1.forward(X)
+activation_1.forward(dense1.output)
+
+dense2.forward(activation_1.output)
+activation_2.forward(dense2.output)
+
+print(activation_2.output)
+
 
